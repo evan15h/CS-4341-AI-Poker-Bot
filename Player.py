@@ -1,4 +1,5 @@
 from Card import *
+from Emotion import *
 
 #Intelligent agent class
 class Player:
@@ -7,6 +8,7 @@ class Player:
         self.cards = []
         self.name = name
         self.money = money
+        self.emotion = Emotion()
 
     def addCard(self, card):
         self.cards.append(card)
@@ -17,4 +19,15 @@ class Player:
         print('\n')
 
     def makeDecision(self):
+        
+        # Base decision logic
+        # base_decision =
+        
+        # Final decision, use emotion.adjust_decision
+        # final_decision =
+
         pass
+
+    def updateEmotion(self, result):
+        # Update emotional state based on round's outcome
+        self.emotion.update_emotion(result)
