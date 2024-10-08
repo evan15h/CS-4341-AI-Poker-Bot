@@ -7,12 +7,12 @@ def setup_poker_game():
     config = setup_config(max_round=100, initial_stack=1000, small_blind_amount=10)
     
     # Register human player
-    config.register_player(name="Human", algorithm=HumanPlayer())
+    config.register_player("Human", HumanPlayer())
     
     # Register AI players
-    config.register_player(name="AI_Bot_1", algorithm=CustomAI())
-    config.register_player(name="AI_Bot_2", algorithm=CustomAI())
-    config.register_player(name="AI_Bot_3", algorithm=CustomAI())
+    config.register_player("AI_Bot_1", CustomAI("AI_Bot_1"))
+    config.register_player("AI_Bot_2", CustomAI("AI_Bot_2"))
+    config.register_player("AI_Bot_3", CustomAI("AI_Bot_3"))
 
     return config
 

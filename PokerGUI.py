@@ -28,7 +28,7 @@ class PokerGUI(tk.Tk):
         self.human_player.action = ("call", call_action['amount'])
         self.quit()
         self.destroy()
-        
+
     def raise_action(self):
         try:
             raise_amount = int(simpledialog.askstring("Raise", "Enter raise amount:"))

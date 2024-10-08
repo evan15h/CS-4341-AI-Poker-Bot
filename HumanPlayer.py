@@ -26,4 +26,12 @@ class HumanPlayer(BasePokerPlayer):
         pass
 
     def receive_round_result_message(self, winners, hand_info, game_state):
-        pass
+        print("\nRound Result:")
+        for winner in winners:
+            print(f"Winner: {winner['name']} with stack: {winner['stack']}")
+        print(f"Hand Info: {hand_info}")
+        print(f"Pot Size: {game_state['pot']['main']['amount']}")
+        # Show player stacks for each player
+        for player in game_state['seats']:
+            print(f"Player {player['name']} has stack: {player['stack']}")
+
