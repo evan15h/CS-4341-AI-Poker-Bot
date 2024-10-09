@@ -1,77 +1,85 @@
 class Emotion:
-   def __init__(self):
-       self.confidence = 50  # Neutral state, ranges from 0 (low) to 100 (high)
-       self.fear = 0  # No fear by default, ranges from 0 to 100
-  
-   # Includes ranges of 0 to 100 for both fear and confidence
-   def adjust_fear(self, amount):
-       if amount < 0:
-           if self.fear + amount < 0:
-               self.fear = 0
-       else:
-           if self.fear + amount > 100:
-               self.fear = 100
+    def __init__(self):
+        self.confidence = 50  # Neutral state, ranges from 0 (low) to 100 (high)
+        self.fear = 0  # No fear by default, ranges from 0 to 100
+
+    # Includes ranges of 0 to 100 for both fear and confidence
+    def adjust_fear(self, amount):
+        if amount < 0:
+            if self.fear + amount < 0:
+                self.fear = 0
+            else:
+                self.fear += amount
+        else:
+            if self.fear + amount > 100:
+                self.fear = 100
+            else:
+                self.fear += amount
 
 
-   def adjust_confidence(self, amount):
-       if amount < 0:
-           if self.confidence + amount < 0:
-               self.confidence = 0
-       else:
-           if self.confidence + amount > 100:
-               self.confidence = 100
+    def adjust_confidence(self, amount):
+        if amount < 0:
+            if self.confidence + amount < 0:
+                self.confidence = 0
+            else:
+                self.confidence += amount
+        else:
+            if self.confidence + amount > 100:
+                self.confidence = 100
+            else:
+                self.confidence += amount
 
 
-   #Make sure to actually call this somewhere
-   def update_emotion(self, result):
-       # Adjust emotions based on the result of the previous round, adjust variables as needed
-       if result == 'win':
-           self.adjust_confidence(15)
-           self.adjust_fear(-5)
+    #Make sure to actually call this somewhere
+    def update_emotion(self, result):
+        # Adjust emotions based on the result of the previous round, adjust variables as needed
+        if result == 'win':
+            self.adjust_confidence(15)
+            self.adjust_fear(-5)
 
 
-       elif result == 'loss':
-           self.adjust_confidence(-15)
-           self.adjust_fear(+10)
-  
-   def adjust_decision(self, base_decision, amount=0):
-       # Modify the base decision based on emotions
-       # Raising increases fear
-       # Folding reduces fear
+        elif result == 'loss':
+            self.adjust_confidence(-15)
+            self.adjust_fear(+10)
+
+    def adjust_decision(self, base_decision, amount=0):
+        # Modify the base decision based on emotions
+        # Raising increases fear
+        # Folding reduces fear
 
 
-       # Very high confidence
-       if self.confidence > 85:  # High confidence leads to more aggressive play
+        # Very high confidence
+        if self.confidence > 85:  # High confidence leads to more aggressive play
 
 
-           if base_decision == "raise":
-               self.adjust_fear(10)
-               return base_decision, amount
-           elif base_decision == "call":
-               self.adjust_fear(10)
-               return 'raise', amount
-           elif base_decision == "fold":
-               return 'call', amount
-          
-       # High confidence
-       elif self.confidence > 65:  # High confidence leads to more aggressive play
+            if base_decision == "raise":
+                self.adjust_fear(10)
+                return base_decision, amount
+            elif base_decision == "call":
+                self.adjust_fear(10)
+                return 'raise', amount
+            elif base_decision == "fold":
+                return 'call', amount
+            
+        # High confidence
+        elif self.confidence > 65:  # High confidence leads to more aggressive play
 
 
-           if base_decision == "raise":
-               self.adjust_fear(10)
-               return base_decision, amount
-           elif base_decision == "call":
-               return 'raise', amount
-           elif base_decision == "fold":
-               self.adjust_fear(-5)
-               return base_decision, amount
-      
-       # High fear
-       elif self.fear > 60:  # High fear may lead to folding
-           self.adjust_fear(-25)
-           return 'fold', amount
-      
-       return base_decision, amount
+            if base_decision == "raise":
+                self.adjust_fear(10)
+                return base_decision, amount
+            elif base_decision == "call":
+                return 'raise', amount
+            elif base_decision == "fold":
+                self.adjust_fear(-5)
+                return base_decision, amount
+        
+        # High fear
+        elif self.fear > 60:  # High fear may lead to folding
+            self.adjust_fear(-25)
+            return 'fold', amount
+        
+        return base_decision, amount
 
 
 

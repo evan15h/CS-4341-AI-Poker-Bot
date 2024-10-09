@@ -7,8 +7,6 @@ class HumanPlayer(BasePokerPlayer):
         self.action = None
 
     def declare_action(self, valid_actions, hole_card, game_state):
-        # gui = PokerGUI(self, valid_actions)
-        # gui.mainloop()  # Wait for the GUI to close
 
         amount = 0
         while(True):
@@ -17,11 +15,18 @@ class HumanPlayer(BasePokerPlayer):
                 break
     
         if action == 'raise':
-            while(True):   
+            flag = 0
+            while(flag == 0):   
                 amount = input("How much would you like to raise (Must be an integer)? ")
                 if amount.isdigit():
                     amount = int(amount)
-                    break
+                    for player in game_state['seats']:
+                        if player['name'] == 'Human':
+                            stack = player['stack']
+                            print(f"This is the stack: {stack}")
+                            if amount <= stack and amount > 0:
+                                flag = 1
+                                break
         if action == 'call':
             pass
         if action == 'fold':
