@@ -1,6 +1,5 @@
 from pypokerengine.players import BasePokerPlayer
 from tkinter import simpledialog, Tk
-from PokerGUI import PokerGUI
 
 class HumanPlayer(BasePokerPlayer):
 
