@@ -1,24 +1,72 @@
+from pypokerengine.players import BasePokerPlayer
 import tkinter as tk
+from pypokerengine.api.game import setup_config, start_poker
+from CustomAI import CustomAI
+#from HumanPlayer import HumanPlayer
+
+# HumanPlayer.py
+class HumanPlayer(BasePokerPlayer):
+
+    def __init__(self):
+        self.action = None
+
+    def declare_action(self, valid_actions, hole_card, game_state):
+        #gui = PokerGUI(self, valid_actions)
+        #gui.mainloop()  # Wait for the GUI to close
+        wait_for_response()
+        return self.action
+
+    def receive_game_start_message(self, game_info):
+        pass
+
+    def receive_round_start_message(self, round_count, hole_card, seats):
+        pass
+
+    def receive_street_start_message(self, street, game_state):
+        pass
+
+    def receive_game_update_message(self, action, game_state):
+        pass
+
+    def receive_round_result_message(self, winners, hand_info, game_state):
+        pass
+
 
 window = tk.Tk()
 window.title('Emotional Poker Bots')
 window.minsize(1500, 1000)
 
+response = False
+
+# Need some signal to wait for button press
+def wait_for_response():
+    global response
+
+    while(True):
+        if response == True:
+            response = False
+            break
+    
+    return
+
 # Callback function for calling
 def call():
-    pass
+    call_action = next((action for action in human.valid_actions if action["action"] == "call"), 0)
+    human_player.action = ("call", call_action['amount'])
+    response = True
 
 # Callback function for folding
 def fold():
-    pass
+    human_player.action = ("fold", 0)
+    response = True
 
 # Callback function for raising
 def bet():
-    pass
+    response = True
 
 # Callback function for checking
 def check():
-    pass
+    response = True
 
 # Checks if the raise amount is valid
 def valid_raise():
@@ -72,5 +120,25 @@ pot.place(x=750, y= 600)
 canvas = tk.Canvas(window, width= 200, height = 200, borderwidth=0, highlightthickness=0)
 canvas.place(x = 650, y= 350)
 card = canvas.create_rectangle(10, 10, 20, 60)
+
+#Start poker stuff here
+config = setup_config(max_round=100, initial_stack=1000, small_blind_amount=10)
+    
+# Register human player
+human = HumanPlayer()
+config.register_player(name="Human", algorithm=human)
+    
+# Register AI players
+config.register_player(name="AI_Bot_1", algorithm=CustomAI())
+config.register_player(name="AI_Bot_2", algorithm=CustomAI())
+config.register_player(name="AI_Bot_3", algorithm=CustomAI())
+
+
+log = tk.Label(window, text='log')
+log.place(x=750, y=300)
+# Start the poker game using the pypokergame engine
+game_result = start_poker(config, verbose=1)
+log.config(text=game_result)
+#print(game_result)  # Display final results
 
 window.mainloop()
