@@ -7,6 +7,9 @@ class HumanPlayer(BasePokerPlayer):
         self.action = None
 
     def declare_action(self, valid_actions, hole_card, game_state):
+        
+        # valid_actions => [raise_action_info, call_action_info, fold_action_info]
+        call_action_info = valid_actions[1]
 
         amount = 0
         while(True):
@@ -27,11 +30,12 @@ class HumanPlayer(BasePokerPlayer):
                             if amount <= stack and amount > 0:
                                 flag = 1
                                 break
+            # action,amount = raise_action_info["action"], raise_action_info["amount"]
         if action == 'call':
+            amount = call_action_info["amount"]
             pass
         if action == 'fold':
             pass
-
 
         self.action = action, amount
         return self.action
@@ -42,7 +46,7 @@ class HumanPlayer(BasePokerPlayer):
         pass
 
     def receive_round_start_message(self, round_count, hole_card, seats):
-        print(f"Round {round_count} started. Hole cards: {hole_card}")
+        print(f"Hand {round_count} started. Hole cards: {hole_card}")
 
     def receive_street_start_message(self, street, game_state):
         pass
@@ -51,7 +55,7 @@ class HumanPlayer(BasePokerPlayer):
         pass
 
     def receive_round_result_message(self, winners, hand_info, game_state):
-        print("\nRound Result:")
+        print("\nHand Result:")
         for winner in winners:
             print(f"Winner: {winner['name']} with stack: {winner['stack']}")
         print(f"Hand Info: {hand_info}")
