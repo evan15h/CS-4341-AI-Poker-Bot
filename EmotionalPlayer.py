@@ -1,30 +1,37 @@
 from pypokerengine.players import BasePokerPlayer
 import random
 
-class EmotionalPlayer(BasePokerPlayer):  # Do not forget to make parent class as "BasePokerPlayer"
+# Parent class BasePokerPlayer
+class EmotionalPlayer(BasePokerPlayer):
 
     def __init__(self, name):
-        #Score between 1 and 200
+        # Emotion score between 1 and 200
         self.emotion_score = 100
         self.name = name
 
-    #  we define the logic to make an action through this method. (so this method would be the core of your AI)
+    # Contains the logic for determining an action 
     def declare_action(self, valid_actions, hole_card, round_state):
+
         # valid_actions format => [fold_action_info, call_action_info, raise_action_info]
-        call_action_info = valid_actions[1]
-        raise_action_info = valid_actions[2]
-        pot_size = round_state['pot']['main']['amount']  #Get the current pot size
         raise_amount = 0
         percent = 0
+        call_action_info = valid_actions[1]
+        raise_action_info = valid_actions[2]
 
-        # Calculate pot odds
+        # Get the current pot size and display
+        pot_size = round_state['pot']['main']['amount']
+        print(f'Pot size: {pot_size}')
+
+        # Calculate pot odds based on current bet
         if call_action_info['amount'] > 0:
             pot_odds = self.calculate_pot_odds(pot_size, call_action_info['amount'])
         else:
             pot_odds = 0
 
-        #between 0 and 100
+        # Generate base hand strength score
         score = 0
+
+        # Base on high card in hole cards
         for card in hole_card:
             if "A" in card:
                 score = 90
@@ -50,32 +57,40 @@ class EmotionalPlayer(BasePokerPlayer):  # Do not forget to make parent class as
                 score = 20
             elif "3" in card:
                 score = 10
+
+            # Pocket 2s
             else:
                 score = 95
 
+        # Check if there is atleast a pair and increase the score
         for com in round_state['community_card']:
             for hol in hole_card:
                 if hol[1] in com[1]:
                     score +=100
         
-        score = score
+        # Add some variance to incorporate bluffing and missing chances
         random_influence = random.uniform(0.4, 1.0)
         score = score * random_influence
 
+        # Incorporate the emotional influence
         score = score * self.emotion_score / 100
 
-        if score < 40:
-            # Check
+        # Based on the generated score make an action and adjust the emotion based on the action
+        if score < 30:
             if call_action_info['amount'] == 0:
+                # Check
                 self.adjust_emotion(0)
                 return "call", 0
             else:
+                # Fold
                 self.adjust_emotion(-5)
                 return "fold", 0
-        elif score < 70:
+        elif score < 60:
+            # Call
             self.adjust_emotion(1)
             return "call", call_action_info['amount']
         else:
+            # Raise
             self.adjust_emotion(8)
             if pot_odds >= 2:
                 percent = 0.75
@@ -104,6 +119,7 @@ class EmotionalPlayer(BasePokerPlayer):  # Do not forget to make parent class as
     def receive_game_update_message(self, action, round_state):
         pass
 
+    # Update emotion score based on winning or losing the hand
     def receive_round_result_message(self, winners, hand_info, round_state):
         result = "win" if self.uuid in [winner["uuid"] for winner in winners] else "loss"
         if result == "win":
@@ -111,6 +127,7 @@ class EmotionalPlayer(BasePokerPlayer):  # Do not forget to make parent class as
         else:
             self.adjust_emotion(-5)
     
+    # Helper function used to adjust emotion within a valid range
     def adjust_emotion(self, amount):
         if amount > 0:
             if self.emotion_score + amount > 200:
@@ -123,16 +140,15 @@ class EmotionalPlayer(BasePokerPlayer):  # Do not forget to make parent class as
             else:
                 self.emotion_score += amount
 
+    #Calculate the pot odds for making a call based on the pot size and current bet
     def calculate_pot_odds(self, pot_size, call_amount):
-        """
-        Calculate the pot odds for making a call.
-        Pot odds = (Current Pot Size / Cost to Call)
-        """
         return pot_size / call_amount if call_amount > 0 else 0
     
+    # Determine the amount to raise by
     def calculate_raise_amount(self, pot_size, percent, raise_action_info, round_state):
         min_raise = raise_action_info["amount"]["min"]
         max_raise = raise_action_info["amount"]["max"]
+        
         raise_amount = int(percent*pot_size)
         for player in round_state['seats']:
             if player['name'] == self.name:
