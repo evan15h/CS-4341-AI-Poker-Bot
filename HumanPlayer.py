@@ -7,8 +7,9 @@ class HumanPlayer(BasePokerPlayer):
 
     def declare_action(self, valid_actions, hole_card, game_state):
        
-        # valid_actions => [raise_action_info, call_action_info, fold_action_info]
+        # valid_actions => [fold_action_info, call_action_info, raise_action_info]
         call_action_info = valid_actions[1]
+        raise_action_info = valid_actions[2]
 
         amount = 0
         while(True):
@@ -18,27 +19,24 @@ class HumanPlayer(BasePokerPlayer):
                 break
    
         if action == 'raise':
-            flag = 0
-            while(flag == 0):  
-                amount = input("How much would you like to raise (Must be an integer) ")
+            while(True):  
+                min = raise_action_info["amount"]["min"]
+                max = raise_action_info["amount"]["max"]
+                amount = input(f"How much would you like to raise (Must be an integer between {min} and {max}) ")
                 print("\n")
                 if amount.isdigit():
                     amount = int(amount)
                     for player in game_state['seats']:
                         if player['name'] == self.name:
                             stack = player['stack']
-                            print(f"This is the stack: {stack}")
-                            if amount <= stack and amount > 0:
-                                flag = 1
-                                break
-            # action,amount = raise_action_info["action"], raise_action_info["amount"]
-        if action == 'call':
+                            print(f"This is your stack: {stack}")
+                            if amount <= max and amount > min:
+                                return action, amount
+        elif action == 'call':
             amount = call_action_info["amount"]
-            pass
+            return action, amount
         if action == 'fold':
-            pass
-
-        return action, amount
+            return action,amount
 
     def receive_game_start_message(self, game_info):
         pass

@@ -11,23 +11,15 @@ class SmartPlayer(BasePokerPlayer):  # Do not forget to make parent class as "Ba
         # valid_actions format => [raise_action_info, call_action_info, fold_action_info]
         raise_amount = 0
         percent = 0
-        raise_action_info = valid_actions[0]
         call_action_info = valid_actions[1]
-        fold_action_info = valid_actions[2]
-        action, amount = call_action_info["action"], call_action_info["amount"]
         pot_size = round_state['pot']['main']['amount']  #Get the current pot size
         print(f'Pot size: {pot_size}')
-
-        #print(call_action_info["action"])
-        #print(call_action_info["amount"])
 
         # Calculate pot odds
         if call_action_info['amount'] > 0:
             pot_odds = self.calculate_pot_odds(pot_size, call_action_info['amount'])
-            print(f'Pot odds: {pot_odds}')
         else:
             pot_odds = 0
-            print(f'Pot odds: {pot_odds}')
 
         #between 0 and 100
         score = 0
@@ -68,10 +60,6 @@ class SmartPlayer(BasePokerPlayer):  # Do not forget to make parent class as "Ba
         random_influence = random.uniform(0.4, 1.0)
         score = score * random_influence
 
-        #print(f"Hole cards {hole_card}")
-        #print(random_influence)
-        #print(f"Hand score {score}")
-
         if score < 25:
             if call_action_info['amount'] == 0:
                 return "call", 0
@@ -95,7 +83,6 @@ class SmartPlayer(BasePokerPlayer):  # Do not forget to make parent class as "Ba
                 raise_amount = self.calculate_raise_amount(pot_size, percent, round_state)   
                 return "raise", raise_amount
 
-        #return action, amount   # action returned here is sent to the poker engine
 
     def receive_game_start_message(self, game_info):
         pass
@@ -124,7 +111,6 @@ class SmartPlayer(BasePokerPlayer):  # Do not forget to make parent class as "Ba
         for player in round_state['seats']:
             if player['name'] == self.name:
                 stack = player['stack']
-                print(f"This is the stack: {stack}")
                 if raise_amount <= stack and raise_amount > 0:
                     return raise_amount
                 else:

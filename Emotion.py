@@ -66,7 +66,7 @@ class Emotion:
 
 
             if base_decision == "raise":
-                self.adjust_fear(10)
+                self.adjust_fear(20)
                 return base_decision, amount
             elif base_decision == "call":
                 return 'raise', amount
