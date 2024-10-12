@@ -20,9 +20,9 @@ class HumanPlayer(BasePokerPlayer):
    
         if action == 'raise':
             while(True):  
-                min = raise_action_info["amount"]["min"]
-                max = raise_action_info["amount"]["max"]
-                amount = input(f"How much would you like to raise (Must be an integer between {min} and {max}) ")
+                min_raise = raise_action_info["amount"]["min"]
+                max_raise = raise_action_info["amount"]["max"]
+                amount = input(f"How much would you like to raise (Must be an integer between {min_raise} and {max_raise}) ")
                 print("\n")
                 if amount.isdigit():
                     amount = int(amount)
@@ -30,7 +30,7 @@ class HumanPlayer(BasePokerPlayer):
                         if player['name'] == self.name:
                             stack = player['stack']
                             print(f"This is your stack: {stack}")
-                            if amount <= max and amount > min:
+                            if amount <= max_raise and amount >= min_raise:
                                 return action, amount
         elif action == 'call':
             amount = call_action_info["amount"]
